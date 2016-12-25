@@ -53,8 +53,7 @@ int use_syslog = 0;
 #endif
 
 #ifndef __MINGW32__
-void
-ERROR(const char *s)
+void ERROR(const char *s)
 {
     char *msg = strerror(errno);
     LOGE("%s: %s", s, msg);
@@ -64,8 +63,7 @@ ERROR(const char *s)
 
 int use_tty = 1;
 
-char *
-ss_itoa(int i)
+char *ss_itoa(int i)
 {
     /* Room for INT_DIGITS digits, - and '\0' */
     static char buf[INT_DIGITS + 2];
@@ -89,8 +87,7 @@ ss_itoa(int i)
 /*
  * setuid() and setgid() for a specified user.
  */
-int
-run_as(const char *user)
+int run_as(const char *user)
 {
 #ifndef __MINGW32__
     if (user[0]) {
@@ -167,8 +164,7 @@ run_as(const char *user)
     return 1;
 }
 
-char *
-ss_strndup(const char *s, size_t n)
+char *ss_strndup(const char *s, size_t n)
 {
     size_t len = strlen(s);
     char *ret;
@@ -183,15 +179,13 @@ ss_strndup(const char *s, size_t n)
     return ret;
 }
 
-void
-FATAL(const char *msg)
+void FATAL(const char *msg)
 {
     LOGE("%s", msg);
     exit(-1);
 }
 
-void *
-ss_malloc(size_t size)
+void *ss_malloc(size_t size)
 {
     void *tmp = malloc(size);
     if (tmp == NULL)
@@ -199,8 +193,7 @@ ss_malloc(size_t size)
     return tmp;
 }
 
-void *
-ss_realloc(void *ptr, size_t new_size)
+void *ss_realloc(void *ptr, size_t new_size)
 {
     void *new = realloc(ptr, new_size);
     if (new == NULL) {
@@ -211,11 +204,11 @@ ss_realloc(void *ptr, size_t new_size)
     return new;
 }
 
-void
-usage()
+
+void usage()
 {
     printf("\n");
-    printf("shadowsocks-libev %s with %s\n\n", VERSION, USING_CRYPTO);
+    printf("shadowsocks-libev %s\n\n", VERSION);
     printf(
         "  maintained by Max Lv <max.c.lv@gmail.com> and Linus Yang <laokongzi@gmail.com>\n\n");
     printf("  usage:\n\n");
@@ -244,8 +237,6 @@ usage()
     printf(
         "                                  aes-128-cfb, aes-192-cfb, aes-256-cfb,\n");
     printf(
-        "                                  aes-128-ctr, aes-192-ctr, aes-256-ctr,\n");
-    printf(
         "                                  bf-cfb, camellia-128-cfb, camellia-192-cfb,\n");
     printf(
         "                                  camellia-256-cfb, cast5-cfb, des-cfb,\n");
@@ -254,7 +245,7 @@ usage()
     printf(
         "                                  chacha20 and chacha20-ietf.\n");
     printf(
-        "                                  The default cipher is rc4-md5.\n");
+        "                                  The default cipher is tables.\n");
     printf("\n");
     printf(
         "       [-a <user>]                Run as another user.\n");
@@ -276,7 +267,7 @@ usage()
         "       [-b <local_address>]       Local address to bind.\n");
     printf("\n");
     printf(
-        "       [-u]                       Enable UDP relay.\n");
+        "       [-u]                       Enable UDP relay,\n");
 #ifdef MODULE_REDIR
     printf(
         "                                  TPROXY is required in redir mode.\n");
@@ -288,6 +279,8 @@ usage()
 #ifdef MODULE_REMOTE
     printf(
         "       [-6]                       Resovle hostname to IPv6 address first.\n");
+    printf(
+        "       [-w]                       Enable white list mode (when ACL enabled).\n");
 #endif
     printf("\n");
 #ifdef MODULE_TUNNEL
@@ -328,8 +321,7 @@ usage()
     printf("\n");
 }
 
-void
-daemonize(const char *path)
+void daemonize(const char *path)
 {
 #ifndef __MINGW32__
     /* Our process ID and Session ID */
@@ -380,8 +372,7 @@ daemonize(const char *path)
 }
 
 #ifdef HAVE_SETRLIMIT
-int
-set_nofile(int nofile)
+int set_nofile(int nofile)
 {
     struct rlimit limit = { nofile, nofile }; /* set both soft and hard limit */
 

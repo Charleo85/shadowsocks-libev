@@ -49,10 +49,6 @@ struct manager_ctx {
     int host_num;
     char **nameservers;
     int nameserver_num;
-    int mtu;
-#ifdef HAVE_SETRLIMIT
-    int nofile;
-#endif
 };
 
 struct server {

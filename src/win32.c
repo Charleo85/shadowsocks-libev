@@ -27,8 +27,7 @@
 #undef setsockopt
 #endif
 
-void
-winsock_init(void)
+void winsock_init(void)
 {
     WORD wVersionRequested;
     WSADATA wsaData;
@@ -44,14 +43,12 @@ winsock_init(void)
     }
 }
 
-void
-winsock_cleanup(void)
+void winsock_cleanup(void)
 {
     WSACleanup();
 }
 
-void
-ss_error(const char *s)
+void ss_error(const char *s)
 {
     LPVOID *msg = NULL;
     FormatMessage(
@@ -65,8 +62,7 @@ ss_error(const char *s)
     }
 }
 
-int
-setnonblocking(int fd)
+int setnonblocking(int fd)
 {
     u_long iMode = 1;
     long int iResult;
@@ -77,15 +73,13 @@ setnonblocking(int fd)
     return iResult;
 }
 
-size_t
-strnlen(const char *s, size_t maxlen)
+size_t strnlen(const char *s, size_t maxlen)
 {
     const char *end = memchr(s, 0, maxlen);
     return end ? (size_t)(end - s) : maxlen;
 }
 
-const char *
-inet_ntop(int af, const void *src, char *dst, socklen_t size)
+const char *inet_ntop(int af, const void *src, char *dst, socklen_t size)
 {
     struct sockaddr_storage ss;
     unsigned long s = size;

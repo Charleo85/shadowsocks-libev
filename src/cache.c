@@ -45,9 +45,8 @@
  *
  *  @return EINVAL if dst is NULL, ENOMEM if malloc fails, 0 otherwise
  */
-int
-cache_create(struct cache **dst, const size_t capacity,
-             void (*free_cb)(void *element))
+int cache_create(struct cache **dst, const size_t capacity,
+                 void (*free_cb)(void *element))
 {
     struct cache *new = NULL;
 
@@ -76,8 +75,7 @@ cache_create(struct cache **dst, const size_t capacity,
  *
  *  @return EINVAL if cache is NULL, 0 otherwise
  */
-int
-cache_delete(struct cache *cache, int keep_data)
+int cache_delete(struct cache *cache, int keep_data)
 {
     struct cache_entry *entry, *tmp;
 
@@ -93,8 +91,6 @@ cache_delete(struct cache *cache, int keep_data)
             if (entry->data != NULL) {
                 if (cache->free_cb) {
                     cache->free_cb(entry->data);
-                } else {
-                    ss_free(entry->data);
                 }
             }
             ss_free(entry->key);
@@ -103,45 +99,6 @@ cache_delete(struct cache *cache, int keep_data)
     }
 
     ss_free(cache);
-    return 0;
-}
-
-/** Clear old cache object
- *
- *  @param cache
- *  The cache object to clear
- *
- *  @param age
- *  Clear only objects older than the age (sec)
- *
- *  @return EINVAL if cache is NULL, 0 otherwise
- */
-int
-cache_clear(struct cache *cache, ev_tstamp age)
-{
-    struct cache_entry *entry, *tmp;
-
-    if (!cache) {
-        return EINVAL;
-    }
-
-    ev_tstamp now = ev_time();
-
-    HASH_ITER(hh, cache->entries, entry, tmp){
-        if (now - entry->ts > age) {
-            HASH_DEL(cache->entries, entry);
-            if (entry->data != NULL) {
-                if (cache->free_cb) {
-                    cache->free_cb(entry->data);
-                } else {
-                    ss_free(entry->data);
-                }
-            }
-            ss_free(entry->key);
-            ss_free(entry);
-        }
-    }
-
     return 0;
 }
 
@@ -158,8 +115,7 @@ cache_clear(struct cache *cache, ev_tstamp age)
  *
  *  @return EINVAL if cache is NULL, 0 otherwise
  */
-int
-cache_remove(struct cache *cache, char *key, size_t key_len)
+int cache_remove(struct cache *cache, char *key, size_t key_len)
 {
     struct cache_entry *tmp;
 
@@ -205,8 +161,7 @@ cache_remove(struct cache *cache, char *key, size_t key_len)
  *
  *  @return EINVAL if cache is NULL, 0 otherwise
  */
-int
-cache_lookup(struct cache *cache, char *key, size_t key_len, void *result)
+int cache_lookup(struct cache *cache, char *key, size_t key_len, void *result)
 {
     struct cache_entry *tmp = NULL;
     char **dirty_hack       = result;
@@ -218,7 +173,6 @@ cache_lookup(struct cache *cache, char *key, size_t key_len, void *result)
     HASH_FIND(hh, cache->entries, key, key_len, tmp);
     if (tmp) {
         HASH_DELETE(hh, cache->entries, tmp);
-        tmp->ts = ev_time();
         HASH_ADD_KEYPTR(hh, cache->entries, tmp->key, key_len, tmp);
         *dirty_hack = tmp->data;
     } else {
@@ -228,8 +182,7 @@ cache_lookup(struct cache *cache, char *key, size_t key_len, void *result)
     return 0;
 }
 
-int
-cache_key_exist(struct cache *cache, char *key, size_t key_len)
+int cache_key_exist(struct cache *cache, char *key, size_t key_len)
 {
     struct cache_entry *tmp = NULL;
 
@@ -240,7 +193,6 @@ cache_key_exist(struct cache *cache, char *key, size_t key_len)
     HASH_FIND(hh, cache->entries, key, key_len, tmp);
     if (tmp) {
         HASH_DELETE(hh, cache->entries, tmp);
-        tmp->ts = ev_time();
         HASH_ADD_KEYPTR(hh, cache->entries, tmp->key, key_len, tmp);
         return 1;
     } else {
@@ -266,8 +218,7 @@ cache_key_exist(struct cache *cache, char *key, size_t key_len)
  *
  *  @return EINVAL if cache is NULL, ENOMEM if malloc fails, 0 otherwise
  */
-int
-cache_insert(struct cache *cache, char *key, size_t key_len, void *data)
+int cache_insert(struct cache *cache, char *key, size_t key_len, void *data)
 {
     struct cache_entry *entry     = NULL;
     struct cache_entry *tmp_entry = NULL;
@@ -283,7 +234,6 @@ cache_insert(struct cache *cache, char *key, size_t key_len, void *data)
     entry->key = ss_malloc(key_len);
     memcpy(entry->key, key, key_len);
     entry->data = data;
-    entry->ts = ev_time();
     HASH_ADD_KEYPTR(hh, cache->entries, entry->key, key_len, entry);
 
     if (HASH_COUNT(cache->entries) >= cache->max_entries) {

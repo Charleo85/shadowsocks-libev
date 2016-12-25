@@ -54,7 +54,6 @@ typedef struct server {
     int stage;
     buffer_t *buf;
     ssize_t buf_capacity;
-    buffer_t *header_buf;
 
     int auth;
     struct chunk *chunk;

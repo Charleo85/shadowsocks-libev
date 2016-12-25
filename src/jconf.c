@@ -32,8 +32,7 @@
 
 #include <libcork/core.h>
 
-static char *
-to_string(const json_value *value)
+static char *to_string(const json_value *value)
 {
     if (value->type == json_string) {
         return ss_strndup(value->u.string.ptr, value->u.string.length);
@@ -48,15 +47,13 @@ to_string(const json_value *value)
     return 0;
 }
 
-void
-free_addr(ss_addr_t *addr)
+void free_addr(ss_addr_t *addr)
 {
     ss_free(addr->host);
     ss_free(addr->port);
 }
 
-void
-parse_addr(const char *str, ss_addr_t *addr)
+void parse_addr(const char *str, ss_addr_t *addr)
 {
     int ipv6 = 0, ret = -1, n = 0;
     char *pch;
@@ -98,8 +95,7 @@ parse_addr(const char *str, ss_addr_t *addr)
     }
 }
 
-jconf_t *
-read_jconf(const char *file)
+jconf_t *read_jconf(const char *file)
 {
     static jconf_t conf;
 
@@ -217,7 +213,7 @@ read_jconf(const char *file)
                 else
                     LOGI("ignore unknown mode: %s, use tcp_only as fallback",
                          mode_str);
-                ss_free(mode_str);
+                free(mode_str);
             } else if (strcmp(name, "mtu") == 0) {
                 conf.mtu = value->u.integer;
             } else if (strcmp(name, "mptcp") == 0) {

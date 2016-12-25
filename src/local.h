@@ -29,7 +29,6 @@
 #include "encrypt.h"
 #include "obfs.h"
 #include "jconf.h"
-#include "protocol.h"
 
 #include "common.h"
 
@@ -59,6 +58,7 @@ typedef struct server_ctx {
 
 typedef struct server {
     int fd;
+    buffer_t *buf;
     char stage;
     struct enc_ctx *e_ctx;
     struct enc_ctx *d_ctx;
@@ -66,8 +66,6 @@ typedef struct server {
     struct server_ctx *send_ctx;
     struct listen_ctx *listener;
     struct remote *remote;
-
-    buffer_t *buf;
 
     struct cork_dllist_item entries;
 
